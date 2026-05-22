@@ -786,7 +786,7 @@ export default function CalNote() {
             </div>
 
             <div className="cn-total-bar">
-              <span className="cn-total-label">মোট</span>
+              <span className="cn-total-label"></span>
 
               <span
                 className={`cn-total-value${totalPulse ? " pulse" : ""}`}
