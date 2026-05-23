@@ -211,19 +211,7 @@ export default function CalNote() {
 
   const total = useMemo(() => calcTotal(lines), [lines]);
 
-  const lineResults = useMemo(
-    () =>
-      lines.map((line) => {
-        const en = toEn(line);
-
-        if (!/[+\-*/]/.test(en)) {
-          return null;
-        }
-
-        return evalLine(line);
-      }),
-    [lines]
-  );
+  
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -339,8 +327,8 @@ export default function CalNote() {
       });
 
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/sw.js").catch(() => {
-          // ignore registration failure
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js").catch(() => {});
         });
       }
     } catch {
@@ -524,12 +512,13 @@ export default function CalNote() {
         }
 
         .cn-page {
-          min-height: 100vh;
-          min-height: calc(var(--vh, 1vh) * 100);
-          background: #eeece8;
-          display: flex;
-          justify-content: center;
-          padding: 36px 18px calc(80px + env(safe-area-inset-bottom)) 18px;
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
+  background: #eeece8;
+  display: flex;
+  justify-content: center;
+  padding: 22px 18px calc(80px + env(safe-area-inset-bottom)) 18px;
+}
           font-family: 'Atma', sans-serif;
           overscroll-behavior: none;
           width: 100%;
@@ -545,11 +534,11 @@ export default function CalNote() {
         }
 
         .cn-header {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          gap: 12px;
-        }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
 
         .cn-status {
           margin-top: 6px;
@@ -670,37 +659,18 @@ export default function CalNote() {
           display: none;
         }
 
-        .cn-line-result {
-          align-self: center;
-          margin-right: 14px;
-          font-size: 13px;
-          font-weight: 600;
-          color: #bbb;
-          white-space: nowrap;
-          opacity: 0;
-          transform: translateX(4px);
-          transition: opacity .2s, transform .2s;
-          pointer-events: none;
-        }
-
-        .cn-line-result.show {
-          opacity: 1;
-          transform: translateX(0);
-        }
+        
 
         .cn-total-bar {
           border-top: 1.5px solid #f0ebe4;
           padding: 14px 20px 18px;
           display: flex;
-          justify-content: space-between;
+          justify-content: flex-end;
           align-items: center;
           gap: 12px;
         }
 
-        .cn-total-label {
-          font-size: 14px;
-          color: #8d8d8d;
-        }
+        
 
         .cn-total-value {
           font-size: 34px;
@@ -755,7 +725,7 @@ export default function CalNote() {
 
             <div className="cn-lines">
               {lines.map((line, index) => (
-                <div className="cn-row" key={`${index}-${line}`}>
+                <div className="cn-row" key={index}>
                   <span className="cn-num">{toBn(index + 1)}</span>
 
                   <textarea
@@ -766,27 +736,23 @@ export default function CalNote() {
                     value={line}
                     rows={1}
                     spellCheck={false}
+                    inputMode="decimal"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
                     onChange={(e) => handleLineChange(index, e)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     onFocus={(e) => autoResize(e.target)}
                     placeholder=""
                   />
 
-                  <span
-                    className={`cn-line-result${
-                      lineResults[index] !== null ? " show" : ""
-                    }`}
-                  >
-                    {lineResults[index] !== null
-                      ? `= ${fmtNum(lineResults[index])}`
-                      : ""}
-                  </span>
+                  
                 </div>
               ))}
             </div>
 
             <div className="cn-total-bar">
-              <span className="cn-total-label">মোট</span>
+              
 
               <span
                 className={`cn-total-value${totalPulse ? " pulse" : ""}`}
