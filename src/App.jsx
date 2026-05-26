@@ -205,6 +205,32 @@ export default function CalNote() {
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/sw.js").catch(() => {});
       }
+
+      /* Disable pull-to-refresh via touch events */
+      let lastY = 0;
+      document.addEventListener("touchstart", (e) => {
+        lastY = e.touches[0].clientY;
+      }, { passive: true });
+
+      document.addEventListener("touchmove", (e) => {
+        const y = e.touches[0].clientY;
+        const el = e.target;
+        // Allow scroll inside scrollable elements
+        const isScrollable = (node) => {
+          while (node && node !== document.body) {
+            const { overflowY } = getComputedStyle(node);
+            if (overflowY === "auto" || overflowY === "scroll") return true;
+            node = node.parentNode;
+          }
+          return false;
+        };
+        // Block pull-to-refresh: prevent when at top and pulling down
+        if (y > lastY && window.scrollY === 0 && !isScrollable(el)) {
+          e.preventDefault();
+        }
+        lastY = y;
+      }, { passive: false });
+
     } catch {}
   }, []);
 
